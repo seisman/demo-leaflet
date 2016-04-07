@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Global Distribution of Chinese GMT Users</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <link rel="stylesheet" href="Leaflet.Coordinates-0.1.5.css"/>
+    <style>
+    #map { width:1000px; height: 700px; }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script type="text/javascript" src="Leaflet.Coordinates-0.1.5.min.js"></script>
+    <script type="text/javascript" src="Leaflet.ChineseTmsProviders.min.js"></script>
+    <script src="user-distribution.js" type="text/javascript"></script>
+    <script>
+        var map = L.map("map",{
+            center:[0, 120],
+            zoom:2,
+            layers: L.layerGroup([
+                L.tileLayer.chinaProvider('TianDiTu.Normal.Map',{maxZoom:18,minZoom:1}),
+                L.tileLayer.chinaProvider('TianDiTu.Normal.Annotion',{maxZoom:18,minZoom:1})
+            ])
+        });
+
+        L.geoJson(Institutions, {
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.popupContent) {
+                    layer.bindPopup(feature.properties.popupContent);
+                }
+            },
+            pointToLayer: function (feature, latlng) {
+                return L.circleMarker(latlng, {
+                    radius: 7,
+                    fillColor: "#ff7800",
+                    color: "#000",
+                    weight: 1,
+                    opacity: 0.8,
+                    fillOpacity: 0.8,
+                });
+            }
+        }).addTo(map);
+
+        //add standard controls
+        L.control.coordinates({
+            position:"bottomleft",
+            decimals:'6',
+            labelTemplateLat:"Lat: {y}", //optional default "Lat: {y}"
+            labelTemplateLng:"Lon: {x}", //optional default "Lng: {x}"
+        }).addTo(map);
+    </script>
+</body>
+</html>
